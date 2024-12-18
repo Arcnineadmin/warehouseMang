@@ -2,13 +2,10 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Base URL from your environment variables
-  timeout: 10000, // Set a timeout for requests
-  headers: {
-    "Content-Type": "application/json",
-    "X-NodWS-User": "71c5ca0051f8b8d126a050a69c12ca17",
-    "X-NodWS-Auth": "zhSXXCklkFX9y3+M7YioC+0UR7s=",
-  },
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  timeout: 10000,
+  headers: {},
+  withCredentials: false,
 });
 
 // Interceptors for requests
