@@ -6,17 +6,9 @@ import "@/app/globals.css";
 import { TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { getUsers } from "../../api/users/userService";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
-import { fetchProducts } from "@/services/api/productService";
+import { fetchNodProducts } from "@/services/api/productService";
 
-/**
- * Users page component.
- *
- * Fetches and displays users in a table.
- * Allows searching, pagination, editing and deleting users.
- * Opens modals to add/edit or delete users.
- */
 export default function Users() {
   const [state, setState] = useState({
     products: [],
@@ -54,22 +46,21 @@ export default function Users() {
       isLoading: true,
       products: [],
     }));
+
+    const page = getUrlQueryElement("page");
+    const search = getUrlQueryElement("search");
+
     try {
-      // const productsData = await fetchProducts({
-      //   search: getUrlQueryElement("search"),
-      //   page: Number(getUrlQueryElement("page")) ?? state.currentPage,
-      //   pageSize: pageSize,
-      //   sortBy: getUrlQueryElement("sortBy") || state.sortDescriptor.column,
-      //   sortOrder:
-      //     getUrlQueryElement("sortOrder") || state.sortDescriptor.direction,
-      // });
-      const productsData = await fetchProducts("photocamera");
-      console.log("q3eqq2342342", productsData);
-      setState((prevState) => ({
-        ...prevState,
-        products: productsData.products as any,
-        totalPages: productsData.total_pages,
-      }));
+      const productsData = await fetchNodProducts(search || "", +page || 1);
+
+      const result = productsData?.result;
+      if (result) {
+        setState((prevState) => ({
+          ...prevState,
+          products: result.products as any,
+          totalPages: result.total_pages,
+        }));
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -191,8 +182,8 @@ export default function Users() {
             href: "/dashboard",
           },
           {
-            name: "Users",
-            href: "/dashboard/users",
+            name: "Products",
+            href: "/dashboard/products",
           },
         ]}
       />
@@ -212,7 +203,6 @@ export default function Users() {
           { key: "price", label: "PRICE", allowsSorting: true },
           { key: "warranty", label: "WARRANTY", allowsSorting: true },
           { key: "stock_value", label: "STOCK", allowsSorting: true },
-          // { key: "image", label: "IMAGE", allowsSorting: true },
           {
             key: "actions",
             label: "ACTIONS",
