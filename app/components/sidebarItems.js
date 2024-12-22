@@ -5,6 +5,8 @@
  */
 // sidebarItems.js
 import { FaArchive, FaHome, FaUser } from "react-icons/fa";
+import NodIcon from "../../public/favicon-nod.ico"
+import AsbisIcon from "../../public/favicon-asbis.ico"
 
 /**
  * sidebarItems - An array of sidebar item objects to render in the sidebar.
@@ -28,14 +30,14 @@ export const sidebarItems = [
   },
   {
     label: "NOD Webshop",
-    icon: FaUser,
+    icon: () => <img src={NodIcon.src} alt="NOD" className="h-4 w-4" />,
     href: "/dashboard/nod-webshop",
     tooltip: "NOD Webshop",
     roles: ['admin', 'user'],
   },
   {
     label: "Asbis b2b",
-    icon: FaUser,
+    icon: () => <img src={AsbisIcon.src} alt="Asbis" className="h-4 w-4" />,
     href: "/dashboard/asbis-b2b",
     tooltip: "Asbis b2b",
     roles: ['admin', 'user'],
