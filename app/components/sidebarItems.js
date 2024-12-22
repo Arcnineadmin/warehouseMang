@@ -27,10 +27,17 @@ export const sidebarItems = [
     roles: ['admin', 'user'],
   },
   {
-    label: "Products",
+    label: "NOD Webshop",
     icon: FaUser,
-    href: "/dashboard/products",
-    tooltip: "Products",
+    href: "/dashboard/nod-webshop",
+    tooltip: "NOD Webshop",
+    roles: ['admin', 'user'],
+  },
+  {
+    label: "Asbis b2b",
+    icon: FaUser,
+    href: "/dashboard/asbis-b2b",
+    tooltip: "Asbis b2b",
     roles: ['admin', 'user'],
   },
   {

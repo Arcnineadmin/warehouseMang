@@ -133,7 +133,7 @@ const Table: React.FC<TableProps> = ({
         className="min-h-[400px]"
         emptyContent={isLoading ? "" : "No rows to display"}
       >
-        {data.map((item: any, index: any) => (
+        {data?.map((item: any, index: any) => (
           <TableRow key={item?.id || index}>
             {columns.map((column) => (
               <TableCell key={column.key}>
