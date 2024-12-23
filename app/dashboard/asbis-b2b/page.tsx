@@ -233,7 +233,7 @@ export default function AsbisB2B() {
         ]}
         isLoading={state.isLoading}
         hasSearchBar
-        addMore={() => handleAddEditModal()}
+        // addMore={() => handleAddEditModal()}
         data={state.products}
         page={state.currentPage}
         pages={state.totalPages}

@@ -226,7 +226,7 @@ export default function Users() {
         ]}
         isLoading={state.isLoading}
         hasSearchBar
-        addMore={() => handleAddEditModal()}
+        // addMore={() => handleAddEditModal()}
         data={state.products}
         page={state.currentPage}
         pages={state.totalPages}
