@@ -2,45 +2,45 @@
 import axios from "axios";
 import crypto from "crypto";
 
-export const generateNodSignature = ({
-  apiKey = "f29501c5d3cae9cd410b852f509f9e22", // Replace with your actual API key
-  userHeaderValue = "71c5ca0051f8b8d126a050a69c12ca17", // Replace with your actual User ID
-  httpVerb = "GET", // HTTP method (e.g., GET, POST)
-  url = "http://api.b2b.nod.ro/products/?search=photocamera", // Full URL of the request
-  navigationValue = "1", // Navigation header value
-} = {}) => {
-  // Generate the current UTC date string
-  const dateHeader = new Date().toUTCString();
+// export const generateNodSignature = ({
+//   apiKey = "f29501c5d3cae9cd410b852f509f9e22", // Replace with your actual API key
+//   userHeaderValue = "71c5ca0051f8b8d126a050a69c12ca17", // Replace with your actual User ID
+//   httpVerb = "GET", // HTTP method (e.g., GET, POST)
+//   url = "http://api.b2b.nod.ro/products/?search=photocamera", // Full URL of the request
+//   navigationValue = "1", // Navigation header value
+// } = {}) => {
+//   // Generate the current UTC date string
+//   const dateHeader = new Date().toUTCString();
 
-  // Process the URL: Remove the protocol and extract the path
-  const urlParts = url.replace(/http:\/\/|https:\/\//, "").split("/");
-  urlParts.shift(); // Remove the domain
-  const path = urlParts.join("/");
-  // const path = "products/?search=photocamera";
+//   // Process the URL: Remove the protocol and extract the path
+//   const urlParts = url.replace(/http:\/\/|https:\/\//, "").split("/");
+//   urlParts.shift(); // Remove the domain
+//   const path = urlParts.join("/");
+//   // const path = "products/?search=photocamera";
 
-  console.log("11111111111111     ========>>>>>>>>>     ", path);
+//   console.log("11111111111111     ========>>>>>>>>>     ", path);
 
-  // Concatenate the signature string
-  const signatureString = `${httpVerb}${path}/${userHeaderValue}${dateHeader}`;
+//   // Concatenate the signature string
+//   const signatureString = `${httpVerb}${path}/${userHeaderValue}${dateHeader}`;
 
-  // Generate the HMAC-SHA1 signature using the API key
-  const hmac = crypto.createHmac("sha1", apiKey);
-  const signature = hmac.update(signatureString).digest("base64");
+//   // Generate the HMAC-SHA1 signature using the API key
+//   const hmac = crypto.createHmac("sha1", apiKey);
+//   const signature = hmac.update(signatureString).digest("base64");
 
-  // Return the headers for the API request
-  return {
-    "X-NodWS-Auth": signature,
-    "X-NodWs-Date": dateHeader,
-    "X-NodWS-User": userHeaderValue,
-    "X-NodWS-Navigation": navigationValue,
-  };
-};
+//   // Return the headers for the API request
+//   return {
+//     "X-NodWS-Auth": signature,
+//     "X-NodWs-Date": dateHeader,
+//     "X-NodWS-User": userHeaderValue,
+//     "X-NodWS-Navigation": navigationValue,
+//   };
+// };
 
-const nodAxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_NOD_API_BASE_URL,
-  timeout: 10000,
-  withCredentials: false,
-});
+// const nodAxiosInstance = axios.create({
+//   baseURL: process.env.NEXT_PUBLIC_NOD_API_BASE_URL,
+//   timeout: 10000,
+//   withCredentials: false,
+// });
 
 export async function nodApiRequest(
   method: string,
@@ -54,9 +54,9 @@ export async function nodApiRequest(
   }
 
   let url = `https://api.b2b.nod.ro${query}`;
-  if (paramsArray.length) {
-    url = `${url}?${paramsArray.join("&")}`;
-  }
+  // if (paramsArray.length) {
+  //   url = `${url}?${paramsArray.join("&")}`;
+  // }
 
   console.log("7866666666666666", url);
 
@@ -123,4 +123,4 @@ export async function nodApiRequest(
 //   }
 // );
 
-export default nodAxiosInstance;
+// export default nodAxiosInstance;

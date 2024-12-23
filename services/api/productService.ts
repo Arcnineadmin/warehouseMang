@@ -2,7 +2,19 @@ import axiosInstance from "./axiosInstance";
 
 export const fetchNodProducts = async (query: string, page?: number) => {
   try {
-    const response = await axiosInstance.get(`/nod-product`, {
+    const response = await axiosInstance.get(`/nod-product/products`, {
+      params: {
+        search: query,
+        page: page || 1,
+      },
+    });
+    return response.data;
+  } catch (error) {}
+};
+
+export const fetchAbisisProducts = async (query: string, page?: number) => {
+  try {
+    const response = await axiosInstance.get(`/absis/products`, {
       params: {
         search: query,
         page: page || 1,

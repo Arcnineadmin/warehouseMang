@@ -4,7 +4,7 @@ import DeleteConfirmationModal from "@/app/components/users/deleteConfirmationMo
 import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
 import { TableHeader, TableRow, Tooltip } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaInfo, FaInfoCircle, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
 import { fetchNodProducts } from "@/services/api/productService";
@@ -53,12 +53,14 @@ export default function Users() {
     try {
       const productsData = await fetchNodProducts(search || "", +page || 1);
 
-      const result = productsData?.result;
+      console.log(productsData);
+
+      const result = productsData;
       if (result) {
         setState((prevState) => ({
           ...prevState,
-          products: result.products as any,
-          totalPages: result.total_pages,
+          products: result?.data || ([] as any),
+          totalPages: result?.totalPages,
         }));
       }
     } catch (error) {
@@ -183,46 +185,38 @@ export default function Users() {
           },
           {
             name: "Products",
-            href: "/dashboard/products",
+            href: "/dashboard/nod-products",
           },
         ]}
       />
       <Table
         columns={[
-          { key: "name", label: "NAME", allowsSorting: true },
+          { key: "code", label: "CODE", allowsSorting: true },
+          // {
+          //   key: "product_category_name",
+          //   label: "CATEGORY",
+          //   allowsSorting: true,
+          // },
           {
-            key: "product_category_name",
-            label: "CATEGORY",
-            allowsSorting: true,
-          },
-          {
-            key: "manufacturer_name",
+            key: "manufacturerName",
             label: "MANUFACTURER",
             allowsSorting: true,
           },
           { key: "price", label: "PRICE", allowsSorting: true },
           { key: "warranty", label: "WARRANTY", allowsSorting: true },
-          { key: "stock_value", label: "STOCK", allowsSorting: true },
+          { key: "stock", label: "STOCK", allowsSorting: true },
           {
             key: "actions",
             label: "ACTIONS",
             className: "text-end",
             cell: (rowData) => (
               <div className="flex items-center gap-5">
-                <Tooltip content="Edit">
+                <Tooltip content="View Details">
                   <span
-                    className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500"
+                    className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500 w-full pl-5"
                     onClick={() => handleAddEditModal(rowData.id)}
                   >
-                    <FaPencilAlt />
-                  </span>
-                </Tooltip>
-                <Tooltip content="Delete">
-                  <span
-                    className="cursor-pointer text-center text-base text-red-500 hover:text-red-300 dark:text-white dark:hover:text-red-500"
-                    onClick={() => handleDeleteModal(rowData.id)}
-                  >
-                    <FaTrash />
+                    <FaInfoCircle />
                   </span>
                 </Tooltip>
               </div>

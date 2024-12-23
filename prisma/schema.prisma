@@ -42,3 +42,123 @@ model RolePermission {
 
     @@map("role_permissions")
 }
+
+model NodProduct {
+    id                        String    @id @default(cuid())
+    productId                 String?
+    code                      String
+    ean                       String?
+    title                     String    @db.LongText
+    description               String?   @db.LongText
+    fullDescription           String?   @db.LongText
+    minimumQuantity           Int
+    manufacturerId            String
+    manufacturerName          String
+    categoryLevel1Id          Int
+    categoryLevel1Name        String
+    categoryLevel2Id          Int
+    categoryLevel2Name        String
+    categoryLevel3Id          Int
+    categoryLevel3Name        String
+    stock                     Int
+    reservedStock             Int
+    supplierStock             Int
+    supplierStockDeliveryDate DateTime?
+    price                     Float
+    promoPrice                Float
+    greenStamp                Float
+    vatPercent                Float
+    isSpecialPrice            Boolean
+    length                    Float
+    width                     Float
+    height                    Float
+    lengthUnitOfMeasure       String
+    weight                    Float
+    weightUnitOfMeasure       String
+    isNew                     Boolean
+    isEol                     Boolean
+    isOnDemand                Boolean
+    onDemandDeliveryTime      Int
+    hasResealed               Boolean
+    originalProductId         String?
+    warranty                  Int
+    version                   String
+
+    pictures   Picture[]
+    attributes Attribute[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Picture {
+    id         String     @id @default(cuid())
+    pictureId  String
+    pictureUrl String
+    productId  String     @map("nod_product_id")
+    product    NodProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Attribute {
+    id               String     @id @default(cuid())
+    attributeNameId  Int
+    attributeName    String
+    attributeValueId Int
+    attributeValue   String     @db.LongText
+    productId        String     @map("nod_product_id")
+    product          NodProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model AbisisProduct {
+    id              Int     @id @default(autoincrement())
+    productCode     String
+    vendor          String
+    productType     String
+    productCategory String  @db.LongText
+    image           String?
+    description     String  @db.LongText
+    productCard     String?
+    warrantyTerm    Int?
+    availability    Int?
+    retailPrice     Float?
+    myPrice         Float?
+    currencyCode    String?
+    vendorId        Int?
+    groupId         Int?
+    ean             String?
+
+    Images      AbisisImage[]
+    Attributes  AbisisAttributeList[]
+    marketField AbisisMarketingField[]
+    createdAt   DateTime               @default(now())
+    updatedAt   DateTime               @updatedAt
+}
+
+model AbisisImage {
+    id        Int           @id @default(autoincrement())
+    productId Int
+    url       String
+    type      String?
+    Product   AbisisProduct @relation(fields: [productId], references: [id])
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+}
+
+model AbisisAttributeList {
+    id        Int           @id @default(autoincrement())
+    productId Int
+    name      String
+    value     String        @db.LongText
+    Product   AbisisProduct @relation(fields: [productId], references: [id])
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+}
+
+model AbisisMarketingField {
+    id        Int           @id @default(autoincrement())
+    content   String        @db.LongText
+    productId Int           @unique
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+    Product   AbisisProduct @relation(fields: [productId], references: [id])
+}

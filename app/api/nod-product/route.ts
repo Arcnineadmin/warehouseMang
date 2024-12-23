@@ -12,9 +12,6 @@ export async function GET(req: NextRequest) {
   if (page) {
     params.page = +page;
   }
-  console.log("111111111111111111111111111111111111111111111111111111111");
-  console.log(params);
-  console.log("111111111111111111111111111111111111111111111111111111111");
   try {
     const productsData = await nodApiRequest("GET", "/products", params);
 
