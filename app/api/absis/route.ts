@@ -184,7 +184,7 @@ export async function POST(req: any) {
   }
 }
 
-export async function parseXml(filePath: string) {
+async function parseXml(filePath: string) {
   try {
     if (!fs.existsSync(filePath)) {
       console.log("File does not exist.");
