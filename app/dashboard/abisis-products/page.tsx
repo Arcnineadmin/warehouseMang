@@ -3,14 +3,11 @@ import Table from "@/app/components/Table";
 import DeleteConfirmationModal from "@/app/components/users/deleteConfirmationModal";
 import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
-import { TableHeader, TableRow, Tooltip } from "@nextui-org/react";
-import { FaInfoCircle, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { Tooltip } from "@nextui-org/react";
+import { FaInfoCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
-import {
-  fetchAbisisProducts,
-  fetchNodProducts,
-} from "@/services/api/productService";
+import { fetchAbisisProducts } from "@/services/api/productService";
 
 export default function Users() {
   const [state, setState] = useState({
@@ -185,7 +182,7 @@ export default function Users() {
             href: "/dashboard",
           },
           {
-            name: "Products",
+            name: "ABISIS Products",
             href: "/dashboard/abisis-products",
           },
         ]}

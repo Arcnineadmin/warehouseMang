@@ -3,13 +3,27 @@ import Table from "@/app/components/Table";
 import DeleteConfirmationModal from "@/app/components/users/deleteConfirmationModal";
 import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
-import { TableHeader, TableRow, Tooltip } from "@nextui-org/react";
-import { FaInfo, FaInfoCircle, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { Tooltip } from "@nextui-org/react";
+import { FaInfoCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
 import { fetchNodProducts } from "@/services/api/productService";
+import { Select, SelectItem } from "@nextui-org/react";
+
+interface ProductFilterOptions {
+  manufactures?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  minWarranty?: number;
+  maxWarranty?: number;
+  minStock?: number;
+  maxStock?: number;
+}
 
 export default function Users() {
+  const [filtersData, setFiltersData] = useState<ProductFilterOptions>({});
+
+  const [filters, setFilters] = useState<ProductFilterOptions>({});
   const [state, setState] = useState({
     products: [],
     totalPages: 0,
@@ -57,6 +71,7 @@ export default function Users() {
 
       const result = productsData;
       if (result) {
+        setFiltersData(result.filters);
         setState((prevState) => ({
           ...prevState,
           products: result?.data || ([] as any),
@@ -175,6 +190,23 @@ export default function Users() {
     await fetchUsers();
   };
 
+  const FilterComponent = () => {
+    return (
+      <div className="flex gap-4 w-full">
+        <Select
+          className="max-w-xs"
+          label="Favorite Animal"
+          placeholder="Select an animal"
+          selectionMode="multiple"
+        >
+          {filtersData?.manufactures?.map((name) => (
+            <SelectItem key={name}>{name}</SelectItem>
+          )) || []}
+        </Select>
+      </div>
+    );
+  };
+
   return (
     <>
       <GeneralBreadcrumbs
@@ -184,7 +216,7 @@ export default function Users() {
             href: "/dashboard",
           },
           {
-            name: "Products",
+            name: "NOD Products",
             href: "/dashboard/nod-products",
           },
         ]}
@@ -225,7 +257,7 @@ export default function Users() {
         ]}
         isLoading={state.isLoading}
         hasSearchBar
-        addMore={() => handleAddEditModal()}
+        // addMore={() => handleAddEditModal()}
         data={state.products}
         page={state.currentPage}
         pages={state.totalPages}
@@ -233,6 +265,7 @@ export default function Users() {
         onPageChange={handlePageChange}
         sortDescriptor={state.sortDescriptor}
         onSortChange={handleSortChange}
+        filters={<FilterComponent />}
       />
       {state.modalSettings.isOpenAddEdit && (
         <AddEditModal

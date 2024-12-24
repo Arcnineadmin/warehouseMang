@@ -183,8 +183,8 @@ export default function AsbisB2B() {
             href: "/dashboard",
           },
           {
-            name: "Asbis B2B",
-            href: "/dashboard/asbis-b2b",
+            name: "Absis B2B",
+            href: "/dashboard/absis-b2b",
           },
         ]}
       />

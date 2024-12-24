@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo, useReducer } from "react";
+import React, { ReactNode, Suspense, useMemo, useReducer } from "react";
 import {
   Table as NextTable,
   TableHeader,
@@ -30,6 +30,7 @@ interface TableProps {
   page: number;
   isLoading: boolean;
   sortDescriptor?: any;
+  filters?: ReactNode;
   onSortChange?: (sortDescriptor: any) => void;
 }
 
@@ -38,7 +39,10 @@ const initialState = {
   bottomContent: null,
 };
 
-type ActionType = { type: "SET_TOP_CONTENT" | "SET_BOTTOM_CONTENT"; payload: any };
+type ActionType = {
+  type: "SET_TOP_CONTENT" | "SET_BOTTOM_CONTENT";
+  payload: any;
+};
 
 const reducer = (state: typeof initialState, action: ActionType) => {
   switch (action.type) {
@@ -62,7 +66,8 @@ const Table: React.FC<TableProps> = ({
   onSearchChange,
   onPageChange,
   sortDescriptor,
-  onSortChange
+  onSortChange,
+  filters,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -72,7 +77,7 @@ const Table: React.FC<TableProps> = ({
         <div className="flex items-end justify-between gap-3">
           {hasSearchBar && (
             <Suspense>
-              <SearchBar onSearchChange={value => onSearchChange(value)} />
+              <SearchBar onSearchChange={(value) => onSearchChange(value)} />
             </Suspense>
           )}
           {addMore && (
@@ -81,26 +86,28 @@ const Table: React.FC<TableProps> = ({
             </Button>
           )}
         </div>
+        {filters ? <div className="py-3">{filters}</div> : <></>}
       </div>
     );
     dispatch({ type: "SET_TOP_CONTENT", payload: topContent });
   }, [hasSearchBar, addMore, onSearchChange]);
 
   useMemo(() => {
-    const bottomContent = pages > 0 ? (
-      <div className="flex w-full justify-center">
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          isDisabled={isLoading}
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={onPageChange}
-        />
-      </div>
-    ) : null;
+    const bottomContent =
+      pages > 0 ? (
+        <div className="flex w-full justify-center">
+          <Pagination
+            isCompact
+            showControls
+            showShadow
+            isDisabled={isLoading}
+            color="primary"
+            page={page}
+            total={pages}
+            onChange={onPageChange}
+          />
+        </div>
+      ) : null;
     dispatch({ type: "SET_BOTTOM_CONTENT", payload: bottomContent });
   }, [pages, page, onPageChange, isLoading]);
 
@@ -137,7 +144,9 @@ const Table: React.FC<TableProps> = ({
           <TableRow key={item?.id || index}>
             {columns.map((column) => (
               <TableCell key={column.key}>
-                {column.cell ? column.cell(item) : item[column.key as keyof typeof item]}
+                {column.cell
+                  ? column.cell(item)
+                  : item[column.key as keyof typeof item]}
               </TableCell>
             ))}
           </TableRow>
@@ -146,6 +155,5 @@ const Table: React.FC<TableProps> = ({
     </NextTable>
   );
 };
-
 
 export default Table;
