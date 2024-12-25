@@ -3,7 +3,7 @@ import Table from "@/app/components/Table";
 import DeleteConfirmationModal from "@/app/components/users/deleteConfirmationModal";
 import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
-import { Tooltip } from "@nextui-org/react";
+import { Slider, Tooltip } from "@nextui-org/react";
 import { FaInfoCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
@@ -23,7 +23,12 @@ interface ProductFilterOptions {
 export default function Users() {
   const [filtersData, setFiltersData] = useState<ProductFilterOptions>({});
 
-  const [filters, setFilters] = useState<ProductFilterOptions>({});
+  const [filters, setFilters] = useState({
+    manufactures: [],
+    price: [0, 1000],
+    stock: [0, 500],
+    warranty: [0, 5],
+  });
   const [state, setState] = useState({
     products: [],
     totalPages: 0,
@@ -36,8 +41,6 @@ export default function Users() {
       currentEntry: null,
     },
   });
-
-  const pageSize = 2;
 
   const appendQueriesToUrl = (
     queries: { key: string; value: string | number }[]
@@ -54,7 +57,22 @@ export default function Users() {
     return urlSearchParams.get(key) || "";
   };
 
-  const fetchUsers = async () => {
+  const getAllUrlQueryElements = () => {
+    // Enable downlevelIteration using an environment flag
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // DownlevelIteration enabled, you can now iterate over the entries
+    const filters = {};
+    //@ts-ignore
+    for (const [key, value] of urlParams.entries()) {
+      //@ts-ignore
+      filters[key] = value?.split(",");
+    }
+
+    return filters;
+  };
+
+  const fetchProducts = async () => {
     setState((prevState) => ({
       ...prevState,
       isLoading: true,
@@ -64,8 +82,14 @@ export default function Users() {
     const page = getUrlQueryElement("page");
     const search = getUrlQueryElement("search");
 
+    const filters = getAllUrlQueryElements();
+
     try {
-      const productsData = await fetchNodProducts(search || "", +page || 1);
+      const productsData = await fetchNodProducts(
+        search || "",
+        +page || 1,
+        filters
+      );
 
       console.log(productsData);
 
@@ -97,7 +121,7 @@ export default function Users() {
         ...prevState,
         currentPage: Number(getUrlQueryElement("page")),
       }));
-      await fetchUsers();
+      await fetchProducts();
     };
     init();
   }, []);
@@ -116,7 +140,7 @@ export default function Users() {
   };
 
   const handleAddEdit = async () => {
-    await fetchUsers();
+    await fetchProducts();
   };
 
   const handleDeleteModal = (id: string) => {
@@ -134,7 +158,7 @@ export default function Users() {
   };
 
   const handleDelete = async () => {
-    await fetchUsers();
+    await fetchProducts();
   };
 
   const handleModalClose = () => {
@@ -163,7 +187,7 @@ export default function Users() {
       }));
       appendQueriesToUrl([{ key: "page", value: 1 }]);
     }
-    await fetchUsers();
+    await fetchProducts();
   };
 
   const handlePageChange = async (page: number) => {
@@ -172,7 +196,7 @@ export default function Users() {
       currentPage: page,
     }));
     appendQueriesToUrl([{ key: "page", value: page.toString() }]);
-    await fetchUsers();
+    await fetchProducts();
   };
 
   const handleSortChange = async (sortDescriptor: any) => {
@@ -187,7 +211,16 @@ export default function Users() {
       { key: "sortOrder", value: sortDescriptor.direction },
       { key: "page", value: 1 },
     ]);
-    await fetchUsers();
+    await fetchProducts();
+  };
+
+  const handleFilterChange = async (key: string, value: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [key]: value,
+    }));
+    appendQueriesToUrl([{ key, value }]);
+    await fetchProducts();
   };
 
   const FilterComponent = () => {
@@ -198,11 +231,57 @@ export default function Users() {
           label="Favorite Animal"
           placeholder="Select an animal"
           selectionMode="multiple"
+          onSelectionChange={(values) =>
+            handleFilterChange("manufactures", values)
+          }
         >
           {filtersData?.manufactures?.map((name) => (
             <SelectItem key={name}>{name}</SelectItem>
           )) || []}
         </Select>
+
+        <Slider
+          className="max-w-md"
+          // defaultValue={[
+          //   filtersData?.minPrice || 0,
+          //   filtersData?.maxPrice || 100,
+          // ]}
+          value={filters.price}
+          formatOptions={{ style: "currency", currency: "USD" }}
+          label="Price Range"
+          minValue={filtersData?.minPrice}
+          maxValue={filtersData?.maxPrice}
+          step={1}
+          onChangeEnd={(value) => handleFilterChange("price", value)}
+        />
+        <Slider
+          label="Stock Range"
+          // defaultValue={[
+          //   filtersData?.minStock || 0,
+          //   filtersData?.maxStock || 100,
+          // ]}
+          value={filters.stock}
+          minValue={filtersData?.minStock || 0}
+          maxValue={filtersData?.maxStock || 100}
+          step={1}
+          formatOptions={{ style: "decimal" }}
+          className="max-w-md"
+          onChangeEnd={(value) => handleFilterChange("stock", value)}
+        />
+        <Slider
+          label="Warranty Range"
+          // defaultValue={[
+          //   filtersData?.minWarranty || 0,
+          //   filtersData?.maxWarranty || 100,
+          // ]}
+          value={filters.warranty}
+          minValue={filtersData?.minWarranty || 0}
+          maxValue={filtersData?.maxWarranty || 100}
+          step={1}
+          formatOptions={{ style: "decimal" }}
+          className="max-w-md"
+          onChangeEnd={(value) => handleFilterChange("warranty", value)}
+        />
       </div>
     );
   };

@@ -1,17 +1,16 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-const PAGE_SIZE = 10; // Define the number of products per page
+const PAGE_SIZE = 10;
 
 export async function GET(req: NextRequest) {
-  // Ensure only GET requests are allowed
   if (req.method !== "GET") {
     return NextResponse.json({ error: "Method Not Allowed" });
   }
 
   const queryParams = req.nextUrl.searchParams;
   const search = queryParams.get("search")?.toLowerCase();
-  const vendorsList = queryParams.getAll("vendorsList"); // Updated to handle multiple vendor IDs
+  const vendorsList = queryParams.getAll("vendorsList");
   const minPrice = queryParams.get("minPrice");
   const maxPrice = queryParams.get("maxPrice");
   const minWarranty = queryParams.get("minWarranty");
@@ -20,11 +19,9 @@ export async function GET(req: NextRequest) {
   const maxStock = queryParams.get("maxStock");
   const page = queryParams.get("page");
 
-  // Validate query parameters
   const currentPage = parseInt(page as string) || 1;
   const skip = (currentPage - 1) * PAGE_SIZE;
 
-  // Parse numeric filters
   const minParsedPrice = minPrice ? parseFloat(minPrice) : undefined;
   const maxParsedPrice = maxPrice ? parseFloat(maxPrice) : undefined;
   const minParsedWarranty = minWarranty ? parseInt(minWarranty) : undefined;
@@ -32,7 +29,8 @@ export async function GET(req: NextRequest) {
   const minParsedStock = minStock ? parseInt(minStock) : undefined;
   const maxParsedStock = maxStock ? parseInt(maxStock) : undefined;
 
-  // Building the filter
+  const defaultMaxValue = 1000000;
+
   const where: any = {
     AND: [
       search
@@ -53,13 +51,28 @@ export async function GET(req: NextRequest) {
           }
         : undefined,
       minParsedPrice !== undefined || maxParsedPrice !== undefined
-        ? { myPrice: { gte: minParsedPrice, lte: maxParsedPrice } }
+        ? {
+            price: {
+              gte: minParsedPrice ?? 0,
+              lte: maxParsedPrice ?? defaultMaxValue,
+            },
+          }
         : undefined,
       minParsedWarranty !== undefined || maxParsedWarranty !== undefined
-        ? { warranty: { gte: minParsedWarranty, lte: maxParsedWarranty } }
+        ? {
+            warranty: {
+              gte: minParsedWarranty ?? 0,
+              lte: maxParsedWarranty ?? 1000, // Assuming a high default for warranty
+            },
+          }
         : undefined,
       minParsedStock !== undefined || maxParsedStock !== undefined
-        ? { stock: { gte: minParsedStock, lte: maxParsedStock } }
+        ? {
+            stock: {
+              gte: minParsedStock ?? 0,
+              lte: maxParsedStock ?? 10000, // Assuming a high default for stock
+            },
+          }
         : undefined,
     ].filter(Boolean),
   };

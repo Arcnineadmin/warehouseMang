@@ -1,15 +1,41 @@
 import axiosInstance from "./axiosInstance";
 
-export const fetchNodProducts = async (query: string, page?: number) => {
+export const fetchNodProducts = async (
+  query: string,
+  page?: number,
+  filters?: any
+) => {
   try {
+    const params: any = {
+      search: query?.toLowerCase(),
+      page: page || 1,
+    };
+
+    if (filters) {
+      if (filters.manufactures?.length)
+        params.vendorsList = filters.manufactures;
+      if (filters.price?.length) {
+        params.minPrice = filters.price[0];
+        params.maxPrice = filters.price[1];
+      }
+      if (filters.warranty?.length) {
+        params.minWarranty = filters.warranty[0];
+        params.maxWarranty = filters.warranty[1];
+      }
+      if (filters.stock?.length) {
+        params.minStock = filters.stock[0];
+        params.maxStock = filters.stock[1];
+      }
+    }
+
     const response = await axiosInstance.get(`/nod-product/products`, {
-      params: {
-        search: query,
-        page: page || 1,
-      },
+      params,
     });
     return response.data;
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error;
+  }
 };
 
 export const fetchAbisisProducts = async (query: string, page?: number) => {
